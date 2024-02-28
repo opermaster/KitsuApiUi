@@ -5,11 +5,19 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:KitsuApiUi"
         mc:Ignorable="d"
-        Title="MainWindow" Height="650" Width="800">
-    <StackPanel Margin="20">
-        <TextBox Height="30" Margin="0 0 0 10" x:Name="Input_Name"></TextBox>
-        <Button Width="100" x:Name="Enter_User_Name" Click="Enter_User_Name_Click">Find</Button>
-        <Image Width="300" Height="300" Margin="00 10 00 10" x:Name="Anime_Poster"></Image>
-        <TextBlock  TextWrapping="Wrap" FontSize="30" x:Name="Output_User"></TextBlock>
-    </StackPanel>
+        WindowState="Maximized"
+        Title="Kitsu_Search" Height="650" Width="800">
+    <Grid>
+        <ScrollViewer>
+            <StackPanel Margin="20">
+                <StackPanel>
+                    <TextBox FontSize="20" Width="300" Height="30" Margin="0 0 0 10" x:Name="Input_Name"></TextBox>
+                    <Button FontSize="20" Width="100" x:Name="Enter_User_Name" Click="Enter_User_Name_Click">Find</Button>
+                </StackPanel>
+                <StackPanel Margin="0 10 0 0">
+                    <StackPanel x:Name="Anime_List"></StackPanel>
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
 </Window>

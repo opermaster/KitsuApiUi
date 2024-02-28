@@ -12,6 +12,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Xml.Linq;
 using KisuApiLogic;
 
 namespace KitsuApiUi
@@ -21,27 +22,45 @@ namespace KitsuApiUi
     /// </summary>
     public partial class MainWindow : Window
     {
+        
         public MainWindow() {
             InitializeComponent();
+            AnimeResponse anime = Main_Logic.GetAnimeFavObj();
+            Anime_List.Children.Add(CreateAnimeList(anime));
+        }
+        private StackPanel CreateAnimeList(AnimeResponse anime_response) {
+            StackPanel main_list = new StackPanel();
+
+            foreach (Data dt in anime_response.data) {
+                var imgUrl = new Uri(dt.attributes.posterImage.large);
+                var imageData = new WebClient().DownloadData(imgUrl);
+                var bitmapImage = new BitmapImage { CacheOption = BitmapCacheOption.OnLoad };
+                bitmapImage.BeginInit();
+                bitmapImage.StreamSource = new MemoryStream(imageData);
+                bitmapImage.EndInit();
+
+                Image poster = new Image(); poster.Width = 400; poster.Height= 400;
+                poster.Source = bitmapImage;
+
+                TextBlock anime_text_block = new TextBlock();
+                anime_text_block.TextWrapping = TextWrapping.Wrap;
+                anime_text_block.FontSize =30;
+
+                anime_text_block.Text += dt.attributes.titles.en + " / "
+                + dt.attributes.titles.ja_jp + "\n";
+                anime_text_block.Text += "Type: "+dt.type + "\n";
+                anime_text_block.Text += "Slug: " + dt.attributes.slug + "\n";
+                anime_text_block.Text += "Synopsis: " + dt.attributes.synopsis + "\n";
+                anime_text_block.Text += "Created at: " + dt.attributes.createdAt + "\n";
+                main_list.Children.Add(poster);
+                main_list.Children.Add(anime_text_block);
+            }
+            return main_list;
         }
         private void Enter_User_Name_Click(object sender, RoutedEventArgs e) {
+            Anime_List.Children.Clear();
             AnimeResponse anime = Main_Logic.GetAnimeObj(Input_Name.Text);
-
-            var imgUrl = new Uri(anime.data[0].attributes.posterImage.large);
-            var imageData = new WebClient().DownloadData(imgUrl);
-            var bitmapImage = new BitmapImage { CacheOption = BitmapCacheOption.OnLoad };
-            bitmapImage.BeginInit();
-            bitmapImage.StreamSource = new MemoryStream(imageData);
-            bitmapImage.EndInit();
-            Anime_Poster.Source = bitmapImage;
-            Output_User.Text += anime.data[0].attributes.titles.en + "/"
-                + anime.data[0].attributes.titles.ja_jp+"\n";
-            Output_User.Text += anime.data[0].type + "\n";
-            Output_User.Text += anime.data[0].attributes.slug + "\n";
-            Output_User.Text += anime.data[0].attributes.synopsis + "\n";
-            Output_User.Text += anime.data[0].attributes.createdAt + "\n";
-
-
+            Anime_List.Children.Add(CreateAnimeList(anime));
         }
     }
 }

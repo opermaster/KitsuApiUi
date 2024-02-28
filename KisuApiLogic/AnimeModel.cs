@@ -11,7 +11,7 @@ namespace KisuApiLogic
         public string en;
         public string en_jp;
         public string ja_jp;
-
+          
     }
     public class PosterImage
     {
