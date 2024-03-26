@@ -19,9 +19,32 @@ namespace KisuApiLogic
 
             return response;
         }
-        static private string GetAnimeData(string Anime_Name) {
+        static private string ExtractGenres(string[] genres) {
+            string genres_str = "";
+            foreach (var item in genres) {
+                genres_str += "?filter[categories]=" + item;
+            }
+            return genres_str;
+        }
+        static private string GetAnimeData(string Anime_Name, string[] genres_list) {
             Anime_Name = Anime_Name.Replace(" ", "%20");
-            Uri link = new Uri($"https://kitsu.io/api/edge/anime?filter[text]={Anime_Name}");
+            string genres ;
+            Uri link;
+            if (genres_list[0] != "None") {
+                genres = ExtractGenres(genres_list);
+                if (Anime_Name != "" && Anime_Name != "%20") 
+                    link = new Uri($"https://kitsu.io/api/edge/anime?filter[text]={Anime_Name}{genres}");
+                else
+                    link = new Uri($"https://kitsu.io/api/edge/anime{genres}");
+
+            }
+            else {
+                if (Anime_Name != "" && Anime_Name != "%20")
+                    link = new Uri($"https://kitsu.io/api/edge/anime?filter[text]=Naruto");
+                else 
+                    link = new Uri($"https://kitsu.io/api/edge/anime?filter[text]={Anime_Name}");
+            }
+ 
 
             string response;
             HttpWebResponse res;
@@ -35,6 +58,7 @@ namespace KisuApiLogic
             catch {
                 link = new Uri("https://kitsu.io/api/edge/anime?filter[text]=Naruto");
                 req = (HttpWebRequest)WebRequest.Create(link);
+
                 res = (HttpWebResponse)req.GetResponse();
                 using (var sr = new StreamReader(res.GetResponseStream())) {
                     response = sr.ReadToEnd();
@@ -42,8 +66,8 @@ namespace KisuApiLogic
             }
             return response;
         }
-        static public AnimeResponse GetAnimeObj(string name) {
-            string anime = GetAnimeData(name);
+        static public AnimeResponse GetAnimeObj(string name, string[] genres_list) {
+            string anime = GetAnimeData(name, genres_list);
             AnimeResponse Anime_Obj = JsonConvert.DeserializeObject<AnimeResponse>(anime);
             return Anime_Obj;
         }

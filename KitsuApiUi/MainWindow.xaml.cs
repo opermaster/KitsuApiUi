@@ -45,7 +45,6 @@ namespace KitsuApiUi
                 TextBlock anime_text_block = new TextBlock();
                 anime_text_block.TextWrapping = TextWrapping.Wrap;
                 anime_text_block.FontSize =30;
-
                 anime_text_block.Text += dt.attributes.titles.en + " / "
                 + dt.attributes.titles.ja_jp + "\n";
                 anime_text_block.Text += "Type: "+dt.type + "\n";
@@ -59,7 +58,12 @@ namespace KitsuApiUi
         }
         private void Enter_User_Name_Click(object sender, RoutedEventArgs e) {
             Anime_List.Children.Clear();
-            AnimeResponse anime = Main_Logic.GetAnimeObj(Input_Name.Text);
+            Input_Genres.Text=Input_Genres.Text.Replace(" ", "");
+            string[] genres_list;
+            if (Input_Genres.Text == "")
+                genres_list = new string[] { "None" };
+            else genres_list = Input_Genres.Text.Split(',');
+            AnimeResponse anime = Main_Logic.GetAnimeObj(Input_Name.Text,genres_list);
             Anime_List.Children.Add(CreateAnimeList(anime));
         }
     }
